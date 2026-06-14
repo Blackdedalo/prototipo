@@ -8,7 +8,7 @@ export default function HomeChat({ navigate }) {
     <div className="home-layout">
       <section className="intro-panel">
         <p className="eyebrow">Prototipo</p>
-        <h1>Denuncia Virtual PNP asistida por IA</h1>
+        <h1>Mi DenuncIA+</h1>
         <p>
           Registra una denuncia por pérdida de documentos o especies, revisa la constancia previa y consulta el avance con
           el código generado.
