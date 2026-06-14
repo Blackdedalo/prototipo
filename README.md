@@ -1,6 +1,6 @@
 # Prototipo Denuncia Virtual PNP Con IA
 
-Aplicación demostrativa para registrar una denuncia virtual por pérdida de documentos o especies. Incluye asistente IA, formulario por pasos, generación de código, seguimiento público y panel administrativo abierto.
+Aplicación demostrativa para registrar una denuncia virtual por pérdida de documentos o especies. Incluye asistente IA, formulario por pasos, generación de código, seguimiento público y panel administrativo abierto,ademas se adjunta dos archivos .bat para poder correr el proyecto como cerrarlo.
 
 ## Stack
 
