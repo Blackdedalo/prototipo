@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+const configuredApiBase = import.meta.env.VITE_API_BASE_URL || "";
+const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.endsWith(".netlify.app");
+const API_BASE = isNetlifyHost ? "" : configuredApiBase;
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_BASE}${path}`, {
