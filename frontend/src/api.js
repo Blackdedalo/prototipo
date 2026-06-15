@@ -7,7 +7,9 @@ async function request(path, options = {}) {
   });
   const data = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new Error(typeof data?.detail === "string" ? data.detail : JSON.stringify(data?.detail || data));
+    const detail = data?.detail ?? data?.message ?? data;
+    const message = typeof detail === "string" ? detail : JSON.stringify(detail);
+    throw new Error(message && message !== "null" ? message : `Error HTTP ${response.status}`);
   }
   return data;
 }
