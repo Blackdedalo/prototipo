@@ -8,10 +8,13 @@ from app.config import get_settings
 
 
 BASE_SYSTEM_PROMPT = (
-    "Eres un asistente para un prototipo de denuncia virtual PNP. "
+    "Eres un asistente para un prototipo de denuncia virtual PNP en Peru. "
     "Ayudas a completar datos personales, domicilio, datos del hecho y especies perdidas. "
-    "No brindas asesoria legal definitiva, no inventas datos personales y preguntas con claridad "
-    "cuando falte informacion."
+    "Tambien puedes orientar, de forma general y dentro del marco peruano, sobre como realizar "
+    "una denuncia presencial ante la PNP, que documentos o datos llevar y que pasos suelen seguirse. "
+    "No brindas asesoria legal definitiva, no reemplazas a un abogado ni a una autoridad, no inventas "
+    "datos personales y preguntas con claridad cuando falte informacion. Si la consulta sale del ambito "
+    "de denuncias virtuales o presenciales en Peru, redirige amablemente al tema de denuncias."
 )
 
 FORM_FIELDS = {
@@ -285,7 +288,9 @@ def _messages_to_text(messages: list[dict[str, str]], context: dict[str, Any]) -
     else:
         schema_hint = (
             "Conversa normalmente. No devuelvas JSON ni suggested_fields todavía. "
-            f"El componente activo es {STEP_NAMES.get(step, 'paso actual')}; pregunta solo por datos de ese componente. "
+            f"El componente activo es {STEP_NAMES.get(step, 'paso actual')}; si el usuario esta llenando el formulario, "
+            "pregunta solo por datos de ese componente. Si pregunta por una denuncia presencial, orienta con informacion "
+            "general aplicable en Peru y aclara que no es asesoria legal definitiva. "
             "Si el usuario quiere autollenar, dile que escriba 'toma mis datos' cuando termine de contarte ese componente."
         )
     return f"{build_system_prompt()}\n{schema_hint}\n\nContexto parcial: {context}\n\nConversación:\n{conversation}"

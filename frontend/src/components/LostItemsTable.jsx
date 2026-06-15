@@ -2,7 +2,7 @@ import React from "react";
 import { Plus, Trash2 } from "lucide-react";
 
 const emptyItem = {
-  modality: "PÉRDIDA",
+  modality: "PERDIDA",
   item_type: "",
   item_number: "",
   brand: "",
@@ -11,7 +11,8 @@ const emptyItem = {
   description: "",
 };
 
-const numberOnlyTypes = ["D.N.I", "CARNET UNIVERSITARIO"];
+const numberOnlyTypes = ["D.N.I", "CARNET UNIVERSITARIO", "LICENCIA", "TARJETA"];
+const otherType = "OTRO";
 
 function hasDraftData(draft) {
   return ["item_type", "item_number", "brand", "model", "operator", "description"].some((field) =>
@@ -19,20 +20,29 @@ function hasDraftData(draft) {
   );
 }
 
+function cleanDraftForType(draft) {
+  if (numberOnlyTypes.includes(draft.item_type)) {
+    return { ...draft, brand: "", model: "", operator: "", description: "" };
+  }
+  if (draft.item_type === otherType) {
+    return { ...draft, brand: "", model: "", operator: "" };
+  }
+  return draft;
+}
+
+function itemDetail(item) {
+  if (item.item_type === otherType) return item.description || "-";
+  return [item.brand, item.model, item.operator, item.description].filter(Boolean).join(" ") || "-";
+}
+
 export default function LostItemsTable({ items, onChange, errors = {} }) {
   const updateDraft = (field, value) => {
-    const nextDraft = { ...(items.draft || emptyItem), [field]: value };
-    if (field === "item_type" && numberOnlyTypes.includes(value)) {
-      nextDraft.brand = "";
-      nextDraft.model = "";
-      nextDraft.operator = "";
-      nextDraft.description = "";
-    }
+    const nextDraft = cleanDraftForType({ ...(items.draft || emptyItem), [field]: value });
     onChange({ draft: nextDraft });
   };
 
   const addItem = () => {
-    const draft = items.draft || emptyItem;
+    const draft = cleanDraftForType(items.draft || emptyItem);
     if (!hasDraftData(draft)) return;
     onChange({ list: [...items.list, draft], draft: emptyItem });
   };
@@ -41,8 +51,10 @@ export default function LostItemsTable({ items, onChange, errors = {} }) {
     onChange({ list: items.list.filter((_, itemIndex) => itemIndex !== index), draft: items.draft || emptyItem });
   };
 
-  const draft = items.draft || emptyItem;
+  const draft = cleanDraftForType(items.draft || emptyItem);
   const numberOnly = numberOnlyTypes.includes(draft.item_type);
+  const isOther = draft.item_type === otherType;
+  const showCellphoneFields = draft.item_type === "CELULAR";
   const lostItemErrors = Object.entries(errors).filter(([key]) => key.startsWith("lost_items."));
 
   return (
@@ -51,8 +63,9 @@ export default function LostItemsTable({ items, onChange, errors = {} }) {
         <label>
           Modalidad
           <select value={draft.modality} onChange={(event) => updateDraft("modality", event.target.value)}>
-            <option value="PÉRDIDA">PÉRDIDA</option>
+            <option value="PERDIDA">PERDIDA</option>
             <option value="ROBO">ROBO</option>
+            <option value="HURTO">HURTO</option>
           </select>
         </label>
         <label>
@@ -68,10 +81,10 @@ export default function LostItemsTable({ items, onChange, errors = {} }) {
           </select>
         </label>
         <label>
-          Número
+          {isOther ? "Nombre" : "Numero"}
           <input value={draft.item_number} onChange={(event) => updateDraft("item_number", event.target.value)} />
         </label>
-        {!numberOnly && (
+        {showCellphoneFields && (
           <>
             <label>
               Marca
@@ -90,7 +103,7 @@ export default function LostItemsTable({ items, onChange, errors = {} }) {
       </div>
       {!numberOnly && (
         <label>
-          Descripción
+          Descripcion
           <textarea value={draft.description} onChange={(event) => updateDraft("description", event.target.value)} />
         </label>
       )}
@@ -112,7 +125,7 @@ export default function LostItemsTable({ items, onChange, errors = {} }) {
             <tr>
               <th>Modalidad</th>
               <th>Especie</th>
-              <th>Número</th>
+              <th>Numero / Nombre</th>
               <th>Detalle</th>
               <th></th>
             </tr>
@@ -123,7 +136,7 @@ export default function LostItemsTable({ items, onChange, errors = {} }) {
                 <td>{item.modality}</td>
                 <td>{item.item_type}</td>
                 <td>{item.item_number || "-"}</td>
-                <td>{[item.brand, item.model, item.operator, item.description].filter(Boolean).join(" ") || "-"}</td>
+                <td>{itemDetail(item)}</td>
                 <td>
                   <button className="icon danger" type="button" onClick={() => removeItem(index)} title="Eliminar">
                     <Trash2 size={18} />

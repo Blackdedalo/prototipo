@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     ollama_model: str = "llama3.1"
     lm_studio_base_url: str = "http://localhost:1234/v1"
     lm_studio_model: str = "local-model"
-    assistant_behavior: str = "amable"
+    assistant_behavior: str = ""
     assistant_muletilla: str = ""
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
@@ -27,7 +27,7 @@ class Settings(BaseSettings):
         dotenv_settings,
         file_secret_settings,
     ):
-        return init_settings, dotenv_settings, env_settings, file_secret_settings
+        return init_settings, env_settings, dotenv_settings, file_secret_settings
 
     @property
     def cors_origin_list(self) -> list[str]:

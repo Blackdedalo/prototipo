@@ -83,9 +83,15 @@ def test_empty_lost_items_is_reported():
     assert "lost_items" in validate_complaint(payload)
 
 
-def test_hurto_modality_is_not_allowed():
+def test_hurto_modality_is_allowed():
     payload = valid_payload()
     payload["lost_items"][0]["modality"] = "HURTO"
+    assert "lost_items.0.modality" not in validate_complaint(payload)
+
+
+def test_unknown_modality_is_not_allowed():
+    payload = valid_payload()
+    payload["lost_items"][0]["modality"] = "ESTAFA"
     assert "lost_items.0.modality" in validate_complaint(payload)
 
 
@@ -95,6 +101,26 @@ def test_dni_or_carnet_requires_number():
     payload["lost_items"][0]["item_number"] = ""
     payload["lost_items"][0]["description"] = "Carnet sin numero"
     assert "lost_items.0.item_number" in validate_complaint(payload)
+
+
+def test_license_and_card_only_require_number():
+    for item_type in ("LICENCIA", "TARJETA"):
+        payload = valid_payload()
+        payload["lost_items"][0]["item_type"] = item_type
+        payload["lost_items"][0]["item_number"] = "ABC123"
+        payload["lost_items"][0]["brand"] = ""
+        payload["lost_items"][0]["model"] = ""
+        payload["lost_items"][0]["operator"] = ""
+        payload["lost_items"][0]["description"] = ""
+        assert validate_complaint(payload) == {}
+
+
+def test_other_requires_name_and_description():
+    payload = valid_payload()
+    payload["lost_items"][0]["item_type"] = "OTRO"
+    payload["lost_items"][0]["item_number"] = "MOCHILA"
+    payload["lost_items"][0]["description"] = ""
+    assert "lost_items.0.description" in validate_complaint(payload)
 
 
 def test_status_validation():
